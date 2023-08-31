@@ -4,13 +4,13 @@ interface BlockState {
   y: number
   revealed: boolean
   mine?: boolean
-  flagged?: boolean
+  flagged: boolean
   adjacentMines: number
 }
 
-const WIDTH = 10
-const HEIGHT = 10
-const state = reactive(
+const WIDTH = 5
+const HEIGHT = 5
+const state = ref(
   Array.from({ length: HEIGHT }, (_, y) =>
     Array.from({ length: WIDTH },
       (_, x): BlockState => ({
@@ -18,13 +18,14 @@ const state = reactive(
         y,
         revealed: false,
         adjacentMines: 0,
+        flagged: false,
       }),
     ),
   ),
 )
 
 function generateMines(initial: BlockState) {
-  for (const row of state) {
+  for (const row of state.value) {
     for (const block of row) {
       if (Math.abs(initial.x - block.x) <= 1)
         continue
@@ -59,7 +60,7 @@ const numberColors = [
 ]
 
 function updateNumbers() {
-  state.forEach((row) => {
+  state.value.forEach((row) => {
     row.forEach((block) => {
       if (block.mine)
         return
@@ -84,9 +85,13 @@ function expendZero(block: BlockState) {
 }
 
 let mineGenerated = false
-let dev = $ref(false)
+const dev = true
+let gameOver = false
 
 function onClick(block: BlockState) {
+  if (gameOver)
+    return
+
   if (!mineGenerated) {
     generateMines(block)
     mineGenerated = true
@@ -96,7 +101,7 @@ function onClick(block: BlockState) {
   if (block.mine) {
     setTimeout(() => {
       alert('BOOOOM!')
-      dev = true
+      gameOver = true
     })
   }
   else {
@@ -104,9 +109,21 @@ function onClick(block: BlockState) {
   }
 }
 
+function onRightClick(block: BlockState) {
+  if (gameOver)
+    return
+
+  if (block.revealed)
+    return
+  block.flagged = !block.flagged
+}
+
 function getBlockClass(block: BlockState) {
-  if (!block.revealed)
+  if (block.flagged)
     return 'bg-gray-500/10'
+  if (!block.revealed)
+    return 'bg-gray-500/10 hover:bg-gray-500/30'
+
   return block.mine ? 'bg-red-500/50' : numberColors[block.adjacentMines]
 }
 
@@ -116,8 +133,18 @@ function getSiblings(block: BlockState) {
     const y2 = block.y + dy
     if (x2 < 0 || x2 >= WIDTH || y2 < 0 || y2 >= HEIGHT)
       return undefined
-    return state[y2][x2]
+    return state.value[y2][x2]
   }).filter(Boolean) as BlockState[]
+}
+
+watchEffect(checkGameState)
+
+function checkGameState() {
+  const blocks = state.value.flat()
+  if (!blocks.some(block => !block.mine && !block.revealed)) {
+    alert('You win!')
+    gameOver = true
+  }
 }
 </script>
 
@@ -140,12 +167,18 @@ function getSiblings(block: BlockState) {
           items-center justify-center
           border="1 gray-400/10"
           align-middle
-          hover="bg-gray/30"
           :class="getBlockClass(block)"
           @click="onClick(block)"
+          @contextmenu.prevent="onRightClick(block)"
         >
-          <template v-if="block.revealed || dev">
+          <template v-if="block.flagged">
+            <div i-mdi:flag text-red-500 />
+          </template>
+          <template v-else-if="block.revealed || dev">
             <div v-if="block.mine" i-mdi:mine />
+            <div v-else-if="block.flagged">
+              x
+            </div>
             <div v-else>
               {{ block.adjacentMines }}
             </div>
