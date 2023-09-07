@@ -8,6 +8,10 @@ const HEIGHT = 5
 const play = new GamePlay(WIDTH, HEIGHT)
 useStorage('vuesweeper-state', play.state)
 const state = computed(() => play.board)
+
+watchEffect(() => {
+  play.checkGameState()
+})
 </script>
 
 <template>

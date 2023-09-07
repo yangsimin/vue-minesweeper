@@ -22,7 +22,6 @@ export class GamePlay {
 
   constructor(private width: number, private height: number) {
     this.reset()
-    // WATCHeFfect(this.checkGameState)
   }
 
   get board(): BlockState[][] {
