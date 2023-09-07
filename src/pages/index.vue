@@ -2,8 +2,8 @@
 import { isDev, toggleDev } from '~/composables'
 import { GamePlay } from '~/composables/logic'
 
-const WIDTH = 8
-const HEIGHT = 8
+const WIDTH = 16
+const HEIGHT = 16
 const MINES = 10
 
 const play = new GamePlay(WIDTH, HEIGHT, MINES)
@@ -24,17 +24,17 @@ watchEffect(() => {
 <template>
   <div>
     MineSweeper
-    <div p5>
+    <div overflow-auto p5>
       <div
         v-for="row, y in state"
         :key="y"
         flex="~ gap-1"
-        my-1 items-center justify-center
+        ma my-1 w-max items-center justify-center
       >
         <MineBlock
           v-for="block, x in row" :key="x"
           :block="block"
-          @click="play.onClick(block)"
+          @click="playhhh.onClick(block)"
           @contextmenu.prevent="play.onRightClick(block)"
         />
       </div>

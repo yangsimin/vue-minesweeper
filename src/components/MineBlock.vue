@@ -26,7 +26,7 @@ function getBlockClass(block: BlockState) {
 
 <template>
   <button
-    h-10 w-10
+    min-h-10 min-w-10
     flex="~"
     items-center justify-center
     border="1 gray-400/10"
