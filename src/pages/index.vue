@@ -2,9 +2,9 @@
 import { isDev, toggleDev } from '~/composables'
 import { GamePlay } from '~/composables/logic'
 
-const WIDTH = 16
-const HEIGHT = 16
-const MINES = 10
+const WIDTH = 8
+const HEIGHT = 8
+const MINES = 3
 
 const play = new GamePlay(WIDTH, HEIGHT, MINES)
 useStorage('vuesweeper-state', play.state)
@@ -16,6 +16,20 @@ const mineCount = computed(() => {
     , 0)
 })
 
+function newGame(difficulty: 'easy' | 'medium' | 'hard') {
+  switch (difficulty) {
+    case 'easy':
+      play.reset(9, 9, 10)
+      break
+    case 'medium':
+      play.reset(16, 16, 40)
+      break
+    case 'hard':
+      play.reset(16, 30, 99)
+      break
+  }
+}
+
 watchEffect(() => {
   play.checkGameState()
 })
@@ -24,17 +38,31 @@ watchEffect(() => {
 <template>
   <div>
     MineSweeper
+    <div flex="~ gap1 justify-center">
+      <button btn @click="play.reset()">
+        New Game
+      </button>
+      <button btn @click="newGame('easy')">
+        Easy
+      </button>
+      <button btn @click="newGame('medium')">
+        Medium
+      </button>
+      <button btn @click="newGame('hard')">
+        Hard
+      </button>
+    </div>
     <div overflow-auto p5>
       <div
         v-for="row, y in state"
         :key="y"
-        flex="~ gap-1"
-        ma my-1 w-max items-center justify-center
+        flex="~"
+        ma w-max items-center justify-center
       >
         <MineBlock
           v-for="block, x in row" :key="x"
           :block="block"
-          @click="playhhh.onClick(block)"
+          @click="play.onClick(block)"
           @contextmenu.prevent="play.onRightClick(block)"
         />
       </div>
@@ -46,9 +74,7 @@ watchEffect(() => {
       <button btn @click="toggleDev()">
         {{ isDev ? 'DEV' : 'NORMAL' }}
       </button>
-      <button btn @click="play.reset()">
-        RESET
-      </button>
     </div>
+    <Confetti :passed="play.state.value.gameState === 'won'" />
   </div>
 </template>

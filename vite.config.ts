@@ -8,6 +8,7 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import UnoCSS from 'unocss/vite'
 import VueMacros from 'unplugin-vue-macros/vite'
+import ReactivityTransform from '@vue-macros/reactivity-transform/vite'
 
 export default defineConfig({
   resolve: {
@@ -16,6 +17,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    ReactivityTransform(),
     VueMacros({
       defineOptions: false,
       defineModels: false,
@@ -36,6 +38,7 @@ export default defineConfig({
     AutoImport({
       imports: [
         'vue',
+        'vue/macros',
         'vue-router',
         '@vueuse/core',
       ],

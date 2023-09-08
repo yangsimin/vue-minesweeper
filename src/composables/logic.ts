@@ -36,7 +36,11 @@ export class GamePlay {
     return this.state.value.board.flat()
   }
 
-  reset() {
+  reset(width = this.width, height = this.height, mines = this.mines) {
+    this.width = width
+    this.height = height
+    this.mines = mines
+
     this.state.value = {
       board: Array.from({ length: this.height }, (_, y) =>
         Array.from({ length: this.width },
@@ -67,9 +71,7 @@ export class GamePlay {
       const x = this.randomInt(0, this.width - 1)
       const y = this.randomInt(0, this.height - 1)
       const block = state[y][x]
-      if (Math.abs(initial.x - block.x) <= 1)
-        return false
-      if (Math.abs(initial.y - block.y) <= 1)
+      if (Math.abs(initial.x - block.x) <= 1 && Math.abs(initial.y - block.y) <= 1)
         return false
       if (block.mine)
         return false

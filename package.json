@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@vueuse/core": "^10.1.2",
+    "canvas-confetti": "^1.6.0",
     "vue": "^3.3.4",
     "vue-router": "^4.2.2"
   },
@@ -20,10 +21,12 @@
     "@antfu/eslint-config": "^0.39.5",
     "@iconify-json/carbon": "^1.1.17",
     "@iconify-json/mdi": "^1.1.54",
+    "@types/canvas-confetti": "^1.6.1",
     "@types/node": "^20.2.5",
     "@unocss/eslint-config": "^0.53.0",
     "@unocss/reset": "^0.53.0",
     "@vitejs/plugin-vue": "^4.2.3",
+    "@vue-macros/reactivity-transform": "^0.3.22",
     "@vue-macros/volar": "^0.10.2",
     "@vue/test-utils": "^2.3.2",
     "eslint": "^8.42.0",
