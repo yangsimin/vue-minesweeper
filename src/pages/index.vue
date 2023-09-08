@@ -2,17 +2,18 @@
 import { isDev, toggleDev } from '~/composables'
 import { GamePlay } from '~/composables/logic'
 
-const WIDTH = 8
-const HEIGHT = 8
-const MINES = 3
+const play = new GamePlay(6, 6, 3)
 
-const play = new GamePlay(WIDTH, HEIGHT, MINES)
+const now = $(useNow())
+const timer = $computed(() => ((+now - play.state.value.startMS) / 1000).toFixed(1))
 useStorage('vuesweeper-state', play.state)
 const state = computed(() => play.board)
 
-const mineCount = computed(() => {
+const mineRest = computed(() => {
+  if (!play.state.value.mineGenerated)
+    return play.mines
   return play.blocks.reduce(
-    (sum, block) => sum + (block.mine ? 1 : 0)
+    (sum, block) => sum + (block.mine ? 1 : 0) - (block.flagged ? 1 : 0)
     , 0)
 })
 
@@ -38,7 +39,7 @@ watchEffect(() => {
 <template>
   <div>
     MineSweeper
-    <div flex="~ gap1 justify-center">
+    <div flex="~ gap1 justify-center" p4>
       <button btn @click="play.reset()">
         New Game
       </button>
@@ -51,6 +52,22 @@ watchEffect(() => {
       <button btn @click="newGame('hard')">
         Hard
       </button>
+    </div>
+    <div flex="~ justify-center gap-10">
+      <div
+        flex="~ justify-center items-center gap-1"
+        font-mono text-lg
+      >
+        <div i-carbon-timer />
+        {{ timer }}
+      </div>
+      <div
+        flex="~ justify-center items-center gap-1"
+        font-mono text-lg
+      >
+        <div i-mdi-mine />
+        {{ mineRest }}
+      </div>
     </div>
     <div overflow-auto p5>
       <div
@@ -67,9 +84,7 @@ watchEffect(() => {
         />
       </div>
     </div>
-    <div>
-      Count: {{ mineCount }}
-    </div>
+
     <div flex="~ gap-1" justify-center>
       <button btn @click="toggleDev()">
         {{ isDev ? 'DEV' : 'NORMAL' }}

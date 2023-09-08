@@ -15,15 +15,16 @@ interface GameState {
   board: BlockState[][]
   mineGenerated: boolean
   gameState: 'play' | 'won' | 'lost'
+  startMS: number
 }
 
 export class GamePlay {
   state = ref() as Ref<GameState>
 
   constructor(
-    private width: number,
-    private height: number,
-    private mines: number,
+    public width: number,
+    public height: number,
+    public mines: number,
   ) {
     this.reset()
   }
@@ -42,6 +43,7 @@ export class GamePlay {
     this.mines = mines
 
     this.state.value = {
+      startMS: +Date.now(),
       board: Array.from({ length: this.height }, (_, y) =>
         Array.from({ length: this.width },
           (_, x): BlockState => ({
