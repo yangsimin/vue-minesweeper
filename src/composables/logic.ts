@@ -166,4 +166,25 @@ export class GamePlay {
     if (!blocks.some(block => !block.mine && !block.revealed))
       this.state.value.gameState = 'won'
   }
+
+  autoExpand(block: BlockState) {
+    const siblings = this.getSiblings(block)
+    const shouldReveal = !siblings.some(b => b.mine && !b.flagged)
+    if (shouldReveal) {
+      siblings.forEach((b) => {
+        if (!b.flagged) {
+          b.revealed = true
+          this.expendZero(b)
+        }
+      })
+    }
+
+    const unRevealedAndFlag = siblings.reduce((sum, b) => sum + (b.flagged || !b.revealed ? 1 : 0), 0)
+    if (unRevealedAndFlag === block.adjacentMines) {
+      siblings.forEach((b) => {
+        if (!b.revealed && !b.flagged)
+          b.flagged = true
+      })
+    }
+  }
 }
